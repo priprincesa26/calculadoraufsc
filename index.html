@@ -263,6 +263,10 @@
             text-align: center;
             border-top: 1px solid var(--cor-borda);
             flex-shrink: 0;
+            background: var(--cor-fundo);
+            position: sticky;
+            bottom: 0;
+            z-index: 10;
         }
         
         .btn {
@@ -536,11 +540,15 @@
         @media (max-width: 768px) {
             .main-container {
                 flex-direction: column;
+                height: auto;
+                overflow: auto;
             }
             
             .input-section, .results-section {
                 border-right: none;
                 border-bottom: 1px solid var(--cor-borda);
+                min-height: 50vh;
+                max-height: 70vh;
             }
             
             .questions-grid {
@@ -586,6 +594,19 @@
             .progress-bar {
                 width: 250px;
             }
+            
+            /* CORREÇÃO: Garantir que o botão seja sempre visível */
+            .controls {
+                position: sticky;
+                bottom: 0;
+                background: var(--cor-fundo);
+                z-index: 10;
+                box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
+            }
+            
+            .section-content {
+                padding-bottom: 80px; /* Espaço extra para o botão */
+            }
         }
         
         @media (max-width: 480px) {
@@ -599,6 +620,18 @@
             
             .progress-bar {
                 width: 200px;
+            }
+            
+            .questions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .question-item {
+                padding: 12px;
+            }
+            
+            .section-content {
+                padding: 15px;
             }
         }
     </style>
@@ -982,41 +1015,37 @@
                 questionDetail.innerHTML = `
                     <div class="detail-header">
                         <h3>Questão ${result.question} - Detalhes (Tipo: ${detail.maxValue})</h3>
-                        <div class="question-score-display">Pontuação: ${formatNumber(result.score)}</div>
+                        <div class="question-score ${result.score === 1 ? 'score-perfect' : result.score > 0 ? 'score-partial' : 'score-zero'}">${formatNumber(result.score)}</div>
                     </div>
-                    <div class="affirmatives-detail">
-                        <h4>Afirmativas (${detail.totalAffirmatives} no total):</h4>
-                        ${affirmativesHTML}
-                        <div class="legend">
-                            <div class="legend-item">
-                                <div class="legend-color" style="background-color: var(--cor-certa);"></div>
-                                <span>Correta e marcada</span>
-                            </div>
-                            <div class="legend-item">
-                                <div class="legend-color" style="background-color: #ffeb3b;"></div>
-                                <span>Correta, mas não marcada</span>
-                            </div>
-                            <div class="legend-item">
-                                <div class="legend-color" style="background-color: var(--cor-errada);"></div>
-                                <span>Incorreta e marcada</span>
-                            </div>
-                            <div class="legend-item">
-                                <div class="legend-color" style="background-color: var(--cor-fundo-card);"></div>
-                                <span>Incorreta e não marcada</span>
-                            </div>
-                        </div>
-                    </div>
+                    ${affirmativesHTML}
                     <div class="explanation">
                         ${explanationHTML}
+                    </div>
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: var(--cor-certa);"></div>
+                            <span>Correta e marcada</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #ffeb3b;"></div>
+                            <span>Correta e não marcada</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: var(--cor-errada);"></div>
+                            <span>Incorreta e marcada</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: var(--cor-fundo-card);"></div>
+                            <span>Incorreta e não marcada</span>
+                        </div>
                     </div>
                 `;
                 
                 questionDetail.style.display = 'block';
-                
-                // Scroll para os detalhes
-                questionDetail.scrollIntoView({ behavior: 'smooth' });
             }
         });
     </script>
 </body>
 </html>
+</html>
+
