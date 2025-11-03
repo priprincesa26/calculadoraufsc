@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora UFSC - 40 Questões</title>
+    <style>
+        :root {
+            --cor-primaria: #8B2252;
+            --cor-secundaria: #A83279;
+            --cor-terciaria: #6B1B3C;
+            --cor-destaque: #D94D9C;
+            --cor-texto: #F8E6EF;
+            --cor-fundo: #1A0B11;
+            --cor-fundo-card: #2D0F1C;
+            --cor-borda: #4A1B2D;
+            --cor-certa: #4CAF50;
+            --cor-parcial: #FF9800;
+            --cor-errada: #F44336;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--cor-texto);
+            background-color: var(--cor-fundo);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--cor-primaria), var(--cor-terciaria));
+            color: var(--cor-texto);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        
+        .header-center {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .heart-icon {
+            width: 24px;
+            height: 24px;
+            fill: var(--cor-destaque);
+            animation: heartbeat 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        h1 {
+            font-size: 1.8rem;
+            position: relative;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .creator-link {
+            color: var(--cor-texto);
+            text-decoration: none;
+            font-weight: bold;
+            animation: blink 2s infinite, glow 1.5s ease-in-out infinite alternate;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        
+        .creator-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.05);
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        @keyframes glow {
+            from { text-shadow: 0 0 5px var(--cor-destaque), 0 0 10px var(--cor-destaque); }
+            to { text-shadow: 0 0 10px var(--cor-destaque), 0 0 20px var(--cor-destaque); }
+        }
+        
+        .instructions-toggle {
+            background: none;
+            border: none;
+            color: var(--cor-texto);
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: all 0.3s;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .instructions-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.1);
+        }
+        
+        .instructions-icon {
+            width: 20px;
+            height: 20px;
+            fill: var(--cor-texto);
+        }
+        
+        .instructions {
+            background: var(--cor-terciaria);
+            padding: 15px;
+            border-bottom: 1px solid var(--cor-borda);
+            font-size: 0.9rem;
+            line-height: 1.7;
+            flex-shrink: 0;
+            display: none;
+        }
+        
+        .instructions p {
+            margin-bottom: 5px;
+        }
+        
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .input-section, .results-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border-right: 1px solid var(--cor-borda);
+        }
+        
+        .results-section {
+            border-right: none;
+        }
+        
+        .section-header {
+            background: var(--cor-primaria);
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        
+        .section-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .questions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .question-item {
+            border: 1px solid var(--cor-borda);
+            border-radius: 12px;
+            padding: 15px;
+            background: var(--cor-fundo-card);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .question-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+            border-color: var(--cor-destaque);
+        }
+        
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--cor-borda);
+        }
+        
+        .question-number {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: var(--cor-destaque);
+        }
+        
+        .type-toggle {
+            background: var(--cor-secundaria);
+            color: var(--cor-texto);
+            border: none;
+            border-radius: 6px;
+            padding: 5px 8px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        
+        .type-toggle:hover {
+            background: var(--cor-destaque);
+            transform: scale(1.05);
+        }
+        
+        .answer-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .input-group label {
+            font-size: 0.8rem;
+            margin-bottom: 3px;
+            color: var(--cor-texto);
+            font-weight: 500;
+        }
+        
+        .answer-input {
+            padding: 8px;
+            border: 1px solid var(--cor-borda);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            background: var(--cor-fundo);
+            color: var(--cor-texto);
+            transition: border-color 0.3s;
+        }
+        
+        .answer-input:focus {
+            outline: none;
+            border-color: var(--cor-destaque);
+            box-shadow: 0 0 0 2px rgba(217, 77, 156, 0.2);
+        }
+        
+        .controls {
+            padding: 20px;
+            text-align: center;
+            border-top: 1px solid var(--cor-borda);
+            flex-shrink: 0;
+        }
+        
+        .btn {
+            background: linear-gradient(to right, var(--cor-primaria), var(--cor-secundaria));
+            color: var(--cor-texto);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(-1px);
+        }
+        
+        .btn::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn:hover::after {
+            left: 100%;
+        }
+        
+        /* DESTAQUE DA PONTUAÇÃO TOTAL */
+        .total-score-container {
+            background: linear-gradient(135deg, var(--cor-primaria), var(--cor-terciaria));
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            border: 2px solid var(--cor-destaque);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .total-score-container::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            animation: shine 3s infinite;
+        }
+        
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+        
+        .total-score {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .total-score-label {
+            font-size: 1.3rem;
+            color: var(--cor-texto);
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .questions-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .question-score {
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+        }
+        
+        .question-score:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+        }
+        
+        .score-perfect {
+            background: var(--cor-certa);
+            color: white;
+        }
+        
+        .score-partial {
+            background: var(--cor-parcial);
+            color: white;
+        }
+        
+        .score-zero {
+            background: var(--cor-errada);
+            color: white;
+        }
+        
+        .question-detail {
+            background: var(--cor-terciaria);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border: 1px solid var(--cor-borda);
+        }
+        
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--cor-borda);
+        }
+        
+        .affirmatives-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .affirmative {
+            padding: 8px 12px;
+            border-radius: 6px;
+            background: var(--cor-fundo-card);
+            border: 1px solid var(--cor-borda);
+            font-weight: bold;
+            min-width: 50px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .affirmative.correct {
+            background: var(--cor-certa);
+            color: white;
+            border-color: var(--cor-certa);
+            transform: scale(1.05);
+        }
+        
+        .affirmative.incorrect {
+            background: var(--cor-errada);
+            color: white;
+            border-color: var(--cor-errada);
+            transform: scale(1.05);
+        }
+        
+        .affirmative.missed {
+            background: #ffeb3b;
+            border-color: #fbc02d;
+            color: #333;
+            transform: scale(1.05);
+        }
+        
+        .explanation {
+            margin-top: 15px;
+            padding: 12px;
+            background: var(--cor-fundo-card);
+            border-radius: 8px;
+            border-left: 5px solid var(--cor-destaque);
+            line-height: 1.7;
+        }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            border: 1px solid var(--cor-borda);
+        }
+        
+        /* Loading Animation */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(26, 11, 17, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .simple-heart {
+            width: 80px;
+            height: 80px;
+            fill: var(--cor-destaque);
+            animation: pulse 1.5s infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(0.9); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(0.9); opacity: 0.8; }
+        }
+        
+        .loading-text {
+            color: var(--cor-destaque);
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .progress-bar {
+            width: 300px;
+            height: 12px;
+            background: var(--cor-fundo-card);
+            border-radius: 10px;
+            margin-top: 10px;
+            overflow: hidden;
+            border: 1px solid var(--cor-borda);
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--cor-destaque), var(--cor-primaria));
+            width: 0%;
+            transition: width 0.3s;
+            border-radius: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .input-section, .results-section {
+                border-right: none;
+                border-bottom: 1px solid var(--cor-borda);
+            }
+            
+            .questions-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            
+            .questions-summary {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+            
+            .legend {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            header {
+                flex-direction: column;
+                gap: 10px;
+                padding: 10px;
+            }
+            
+            .header-center {
+                order: 2;
+            }
+            
+            .creator-link {
+                order: 3;
+            }
+            
+            .instructions-toggle {
+                order: 1;
+                align-self: flex-start;
+            }
+            
+            .total-score {
+                font-size: 2.5rem;
+            }
+            
+            .total-score-label {
+                font-size: 1.1rem;
+            }
+            
+            .progress-bar {
+                width: 250px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .total-score {
+                font-size: 2rem;
+            }
+            
+            .total-score-label {
+                font-size: 1rem;
+            }
+            
+            .progress-bar {
+                width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <button class="instructions-toggle" id="instructionsToggle">
+            <svg class="instructions-icon" viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+            </svg>
+        </button>
+        <div class="header-center">
+            <h1>Calculadora UFSC - 40 Questões</h1>
+            <svg class="heart-icon" viewBox="0 0 24 24">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+            <a href="https://x.com/studies_lala" target="_blank" class="creator-link">por @studies_lala</a>
+        </div>
+    </header>
+    
+    <div class="instructions" id="instructions">
+        <p><strong>Instruções:</strong> Para cada questão, selecione o tipo (quantidade de afirmativas) e insira sua resposta e o gabarito oficial. Clique em "Corrigir Prova" para calcular sua pontuação total.</p>
+        <p><strong>Tipos de questão:</strong> 
+            <strong>16</strong> (5 afirmativas: 01, 02, 04, 08, 16) | 
+            <strong>32</strong> (6 afirmativas: 01, 02, 04, 08, 16, 32) | 
+            <strong>64</strong> (7 afirmativas: 01, 02, 04, 08, 16, 32, 64)
+        </p>
+    </div>
+    
+    <div class="main-container">
+        <div class="input-section">
+            <div class="section-header">Preencher Respostas</div>
+            <div class="section-content">
+                <div class="questions-grid" id="questionsContainer">
+                    <!-- As 40 questões serão geradas por JavaScript -->
+                </div>
+            </div>
+            <div class="controls">
+                <button class="btn" id="correctButton">Corrigir Prova</button>
+            </div>
+        </div>
+        
+        <div class="results-section">
+            <div class="section-header">Resultados</div>
+            <div class="section-content">
+                <div class="total-score-container">
+                    <div class="total-score" id="totalScore">0,000</div>
+                    <div class="total-score-label">Pontuação Total / 40</div>
+                </div>
+                
+                <div class="questions-summary" id="questionsSummary">
+                    <!-- O resumo das questões será gerado por JavaScript -->
+                </div>
+                
+                <div class="question-detail" id="questionDetail">
+                    <!-- Os detalhes da questão selecionada serão exibidos aqui -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <svg class="simple-heart" viewBox="0 0 24 24">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+        </svg>
+        <div class="loading-text">Corrigindo sua prova...</div>
+        <div class="progress-bar">
+            <div class="progress" id="progressBar"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const questionsContainer = document.getElementById('questionsContainer');
+            const correctButton = document.getElementById('correctButton');
+            const questionsSummary = document.getElementById('questionsSummary');
+            const questionDetail = document.getElementById('questionDetail');
+            const totalScore = document.getElementById('totalScore');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const progressBar = document.getElementById('progressBar');
+            const instructionsToggle = document.getElementById('instructionsToggle');
+            const instructions = document.getElementById('instructions');
+            
+            // Array para armazenar o tipo de cada questão
+            let questionTypes = Array(40).fill(16);
+            
+            // Toggle das instruções
+            instructionsToggle.addEventListener('click', function() {
+                if (instructions.style.display === 'block') {
+                    instructions.style.display = 'none';
+                } else {
+                    instructions.style.display = 'block';
+                }
+            });
+            
+            // Criar as 40 questões
+            function createQuestions() {
+                questionsContainer.innerHTML = '';
+                
+                for (let i = 0; i < 40; i++) {
+                    const questionItem = document.createElement('div');
+                    questionItem.className = 'question-item';
+                    
+                    // Determinar o texto do botão baseado no tipo atual
+                    let buttonText = '16 (5)';
+                    if (questionTypes[i] === 32) buttonText = '32 (6)';
+                    if (questionTypes[i] === 64) buttonText = '64 (7)';
+                    
+                    questionItem.innerHTML = `
+                        <div class="question-header">
+                            <div class="question-number">Q${i + 1}</div>
+                            <button class="type-toggle" data-question="${i}">${buttonText}</button>
+                        </div>
+                        <div class="answer-inputs">
+                            <div class="input-group">
+                                <label for="answer${i + 1}">Minha Resposta:</label>
+                                <input type="number" class="answer-input" id="answer${i + 1}" min="0" max="127">
+                            </div>
+                            <div class="input-group">
+                                <label for="correct${i + 1}">Gabarito:</label>
+                                <input type="number" class="answer-input" id="correct${i + 1}" min="0" max="127">
+                            </div>
+                        </div>
+                    `;
+                    questionsContainer.appendChild(questionItem);
+                }
+                
+                // Adicionar eventos aos botões de tipo
+                document.querySelectorAll('.type-toggle').forEach(button => {
+                    const questionIndex = parseInt(button.getAttribute('data-question'));
+                    
+                    button.addEventListener('click', function() {
+                        const currentType = questionTypes[questionIndex];
+                        
+                        let newType, newText;
+                        if (currentType === 16) {
+                            newType = 32;
+                            newText = '32 (6)';
+                        } else if (currentType === 32) {
+                            newType = 64;
+                            newText = '64 (7)';
+                        } else {
+                            newType = 16;
+                            newText = '16 (5)';
+                        }
+                        
+                        // Atualizar o array
+                        questionTypes[questionIndex] = newType;
+                        
+                        // Atualizar o texto do botão
+                        this.textContent = newText;
+                    });
+                });
+            }
+            
+            // Inicializar as questões
+            createQuestions();
+            
+            // Função para calcular a pontuação de uma questão
+            function calculateScore(myAnswer, correctAnswer, maxValue) {
+                // Obter afirmativas corretas e marcadas
+                const correctAffirmatives = getAffirmatives(correctAnswer);
+                const myAffirmatives = getAffirmatives(myAnswer);
+                
+                // Filtrar apenas as afirmativas que existem neste tipo de questão
+                const availableAffirmatives = [1, 2, 4, 8, 16, 32, 64].filter(a => a <= maxValue);
+                const filteredCorrect = correctAffirmatives.filter(a => a <= maxValue);
+                const filteredMy = myAffirmatives.filter(a => a <= maxValue);
+                
+                // Contar acertos e erros
+                let correctCount = 0;
+                let incorrectCount = 0;
+                
+                availableAffirmatives.forEach(aff => {
+                    const isCorrect = filteredCorrect.includes(aff);
+                    const isMarked = filteredMy.includes(aff);
+                    
+                    if ((isCorrect && isMarked) || (!isCorrect && !isMarked)) {
+                        correctCount++;
+                    } else {
+                        incorrectCount++;
+                    }
+                });
+                
+                // Verificar condições para zerar a questão
+                if (incorrectCount >= filteredCorrect.length) {
+                    return {
+                        score: 0,
+                        correctCount: correctCount,
+                        incorrectCount: incorrectCount,
+                        totalAffirmatives: availableAffirmatives.length,
+                        correctAffirmatives: filteredCorrect,
+                        myAffirmatives: filteredMy,
+                        zeroed: true,
+                        maxValue: maxValue
+                    };
+                }
+                
+                // Calcular pontuação parcial
+                const score = correctCount / availableAffirmatives.length;
+                
+                return {
+                    score: score,
+                    correctCount: correctCount,
+                    incorrectCount: incorrectCount,
+                    totalAffirmatives: availableAffirmatives.length,
+                    correctAffirmatives: filteredCorrect,
+                    myAffirmatives: filteredMy,
+                    zeroed: false,
+                    maxValue: maxValue
+                };
+            }
+            
+            function getAffirmatives(sum) {
+                if (sum === 0) return [];
+                
+                const affirmatives = [64, 32, 16, 8, 4, 2, 1];
+                const result = [];
+                let remaining = sum;
+                
+                for (const aff of affirmatives) {
+                    if (remaining >= aff) {
+                        result.push(aff);
+                        remaining -= aff;
+                    }
+                }
+                
+                return result.sort((a, b) => a - b);
+            }
+            
+            // Função para formatar números com vírgula
+            function formatNumber(number, decimals = 3) {
+                return number.toFixed(decimals).replace('.', ',');
+            }
+            
+            // Evento do botão de corrigir
+            correctButton.addEventListener('click', function() {
+                // Mostrar animação de carregamento
+                loadingOverlay.style.display = 'flex';
+                
+                // Simular progresso
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += 5;
+                    progressBar.style.width = `${progress}%`;
+                    
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        
+                        // Processar as respostas após a animação
+                        setTimeout(processAnswers, 500);
+                    }
+                }, 100);
+            });
+            
+            function processAnswers() {
+                let totalPoints = 0;
+                const questionResults = [];
+                
+                // Calcular pontuação para cada questão
+                for (let i = 1; i <= 40; i++) {
+                    const myAnswerInput = document.getElementById(`answer${i}`);
+                    const correctAnswerInput = document.getElementById(`correct${i}`);
+                    
+                    const myAnswer = parseInt(myAnswerInput.value) || 0;
+                    const correctAnswer = parseInt(correctAnswerInput.value) || 0;
+                    const maxValue = questionTypes[i-1];
+                    
+                    // Validar se os valores estão dentro do range permitido
+                    const maxPossible = [1, 2, 4, 8, 16, 32, 64].filter(a => a <= maxValue).reduce((sum, a) => sum + a, 0);
+                    
+                    if (myAnswer > maxPossible) {
+                        alert(`Questão ${i}: Sua resposta (${myAnswer}) é maior que o máximo possível (${maxPossible}) para este tipo de questão.`);
+                        myAnswerInput.focus();
+                        loadingOverlay.style.display = 'none';
+                        return;
+                    }
+                    
+                    if (correctAnswer > maxPossible) {
+                        alert(`Questão ${i}: O gabarito (${correctAnswer}) é maior que o máximo possível (${maxPossible}) para este tipo de questão.`);
+                        correctAnswerInput.focus();
+                        loadingOverlay.style.display = 'none';
+                        return;
+                    }
+                    
+                    const result = calculateScore(myAnswer, correctAnswer, maxValue);
+                    questionResults.push({
+                        question: i,
+                        score: result.score,
+                        details: result
+                    });
+                    
+                    totalPoints += result.score;
+                }
+                
+                // Esconder animação de carregamento
+                loadingOverlay.style.display = 'none';
+                
+                // Exibir resultados
+                displayResults(questionResults, totalPoints);
+                
+                // Scroll para o topo da seção de resultados
+                document.querySelector('.results-section .section-content').scrollTop = 0;
+            }
+            
+            // Função para exibir os resultados
+            function displayResults(results, totalPoints) {
+                // Atualizar pontuação total com 3 casas decimais
+                totalScore.textContent = `${formatNumber(totalPoints)}`;
+                
+                // Limpar resumo anterior
+                questionsSummary.innerHTML = '';
+                
+                // Adicionar cada questão ao resumo
+                results.forEach(result => {
+                    const questionScore = document.createElement('div');
+                    questionScore.className = 'question-score';
+                    
+                    // Determinar a classe com base na pontuação
+                    if (result.score === 1) {
+                        questionScore.classList.add('score-perfect');
+                    } else if (result.score > 0) {
+                        questionScore.classList.add('score-partial');
+                    } else {
+                        questionScore.classList.add('score-zero');
+                    }
+                    
+                    // Mostrar pontuação com 3 casas decimais
+                    questionScore.textContent = `Q${result.question}: ${formatNumber(result.score)}`;
+                    questionScore.setAttribute('data-question', result.question);
+                    
+                    // Adicionar evento de clique para mostrar detalhes
+                    questionScore.addEventListener('click', function() {
+                        showQuestionDetail(result);
+                    });
+                    
+                    questionsSummary.appendChild(questionScore);
+                });
+            }
+            
+            // Função para mostrar detalhes de uma questão
+            function showQuestionDetail(result) {
+                const detail = result.details;
+                
+                // Determinar todas as afirmativas baseado no tipo da questão
+                const allAffirmatives = [1, 2, 4, 8, 16, 32, 64].filter(a => a <= detail.maxValue);
+                
+                let affirmativesHTML = '<div class="affirmatives-list">';
+                
+                allAffirmatives.forEach(aff => {
+                    const isCorrect = detail.correctAffirmatives.includes(aff);
+                    const isMarked = detail.myAffirmatives.includes(aff);
+                    
+                    let className = 'affirmative';
+                    if (isCorrect && isMarked) {
+                        className += ' correct';
+                    } else if (isCorrect && !isMarked) {
+                        className += ' missed';
+                    } else if (!isCorrect && isMarked) {
+                        className += ' incorrect';
+                    }
+                    
+                    affirmativesHTML += `<div class="${className}">${aff.toString().padStart(2, '0')}</div>`;
+                });
+                
+                affirmativesHTML += '</div>';
+                
+                let explanationHTML = '';
+                if (detail.zeroed) {
+                    explanationHTML = `<p><strong>Questão zerada:</strong> Você marcou ${detail.incorrectCount} afirmativa(s) incorreta(s) e ${detail.myAffirmatives.filter(a => detail.correctAffirmatives.includes(a)).length} correta(s). Como o número de incorretas é maior ou igual ao número de corretas, a questão é zerada.</p>`;
+                } else {
+                    explanationHTML = `<p>Você classificou corretamente ${detail.correctCount} de ${detail.totalAffirmatives} afirmativas.</p>`;
+                    explanationHTML += `<p>Pontuação: ${detail.correctCount}/${detail.totalAffirmatives} = ${formatNumber(detail.score)} ponto(s)</p>`;
+                }
+                
+                // Adicionar informações sobre as afirmativas marcadas
+                explanationHTML += `<p><strong>Afirmativas corretas:</strong> ${detail.correctAffirmatives.map(a => a.toString().padStart(2, '0')).join(', ')} (soma: ${detail.correctAffirmatives.reduce((sum, a) => sum + a, 0)})</p>`;
+                explanationHTML += `<p><strong>Afirmativas que você marcou:</strong> ${detail.myAffirmatives.map(a => a.toString().padStart(2, '0')).join(', ')} (soma: ${detail.myAffirmatives.reduce((sum, a) => sum + a, 0)})</p>`;
+                
+                questionDetail.innerHTML = `
+                    <div class="detail-header">
+                        <h3>Questão ${result.question} - Detalhes (Tipo: ${detail.maxValue})</h3>
+                        <div class="question-score-display">Pontuação: ${formatNumber(result.score)}</div>
+                    </div>
+                    <div class="affirmatives-detail">
+                        <h4>Afirmativas (${detail.totalAffirmatives} no total):</h4>
+                        ${affirmativesHTML}
+                        <div class="legend">
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: var(--cor-certa);"></div>
+                                <span>Correta e marcada</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #ffeb3b;"></div>
+                                <span>Correta, mas não marcada</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: var(--cor-errada);"></div>
+                                <span>Incorreta e marcada</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: var(--cor-fundo-card);"></div>
+                                <span>Incorreta e não marcada</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="explanation">
+                        ${explanationHTML}
+                    </div>
+                `;
+                
+                questionDetail.style.display = 'block';
+                
+                // Scroll para os detalhes
+                questionDetail.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    </script>
+</body>
+</html>
